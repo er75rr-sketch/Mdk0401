@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Электронный журнал{% endblock %}</title>
+<style>
+  :root { --green:#1f4e3d; --green2:#2e7d5b; --bg:#f3f6f4; --card:#fff; --text:#1b2b26; --muted:#5b6b66;
+          --g5:#2e7d5b; --g4:#5a9e3a; --g3:#d9a21b; --g2:#c8553d; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--text); }
+  header { background:var(--green); color:#fff; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
+  header h1 { font-size:20px; margin:0; font-weight:600; }
+  header form button { background:transparent; color:#fff; border:1px solid rgba(255,255,255,.6); border-radius:6px; padding:6px 14px; cursor:pointer; }
+  main { max-width:1000px; margin:24px auto; padding:0 16px; }
+  .card { background:var(--card); border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:20px; }
+  .stat { background:var(--card); border-radius:12px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .stat .num { font-size:34px; font-weight:700; color:var(--green); }
+  .stat .lbl { color:var(--muted); font-size:14px; }
+  h2 { font-size:18px; margin:0 0 14px; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th, td { text-align:left; padding:9px 8px; border-bottom:1px solid #e4ebe7; vertical-align:middle; }
+  th { color:var(--muted); font-weight:600; font-size:13px; text-transform:uppercase; }
+  .g { display:inline-block; min-width:28px; text-align:center; padding:3px 7px; margin:2px; border-radius:6px; color:#fff; font-weight:700; }
+  .g5 { background:var(--g5); } .g4 { background:var(--g4); } .g3 { background:var(--g3); } .g2 { background:var(--g2); }
+  .absent { color:var(--g2); font-weight:600; } .muted { color:var(--muted); }
+  .login { max-width:360px; margin:80px auto; }
+  .login input { width:100%; padding:10px; margin:6px 0 14px; border:1px solid #c9d6cf; border-radius:8px; font-size:15px; }
+  .login button { width:100%; padding:11px; background:var(--green); color:#fff; border:0; border-radius:8px; font-size:16px; cursor:pointer; }
+  .error { color:var(--g2); margin-bottom:10px; }
+  header a { color:#fff; text-decoration:none; margin-right:18px; }
+  a { color:var(--green2); }
+  .btn { display:inline-block; background:var(--green); color:#fff; border:0; border-radius:8px; padding:9px 16px; font-size:15px; cursor:pointer; text-decoration:none; }
+  .btn.light { background:#e4ebe7; color:var(--text); }
+  select, .card input[type=text], .card input[type=date] { padding:7px 8px; border:1px solid #c9d6cf; border-radius:6px; font-size:15px; background:#fff; }
+  .msg { padding:10px 14px; border-radius:8px; margin-bottom:12px; }
+  .msg.success { background:#e1f2e8; color:#1f4e3d; } .msg.error { background:#fbe5e1; color:#8a2f1e; }
+  .row-absent { background:#fdf1ee; }
+  .head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+<header>
+  <div><h1 style="display:inline">📘 Электронный журнал</h1>
+  {% if user.is_authenticated and user.role != 'student' %}&nbsp;&nbsp;&nbsp;<a href="{% url 'cabinet' %}">Мои занятия</a><a href="/api/">API</a>{% endif %}</div>
+  {% if user.is_authenticated %}
+  <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+    <span>{{ user.full_name }}</span>&nbsp;&nbsp;<button type="submit">Выйти</button>
+  </form>
+  {% endif %}
+</header>
+<main>
+{% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

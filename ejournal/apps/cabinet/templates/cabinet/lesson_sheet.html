@@ -1,0 +1,43 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Ведомость — {{ lesson.assignment.subject.name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin:0">{{ lesson.assignment.subject.name }} · группа {{ lesson.assignment.group.name }}</h2>
+  <div class="muted">{{ lesson.date|date:"d.m.Y" }} · {{ lesson.get_lesson_type_display }} · тема: {{ lesson.topic }} · преподаватель: {{ lesson.assignment.teacher.full_name }}</div>
+</div>
+
+<div class="card">
+  <form method="post">{% csrf_token %}
+  <table>
+    <tr><th>№</th><th>Студент</th><th>Посещаемость</th><th>Оценка</th></tr>
+    {% for r in rows %}
+    <tr class="{% if r.status == 'absent' %}row-absent{% endif %}">
+      <td>{{ forloop.counter }}</td>
+      <td>{{ r.student.full_name }}</td>
+      <td>
+        {% if can_edit %}
+        <select name="att_{{ r.student.id }}">
+          <option value="" {% if not r.status %}selected{% endif %}>—</option>
+          {% for value, label in statuses %}<option value="{{ value }}" {% if r.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        {% else %}{% for value, label in statuses %}{% if r.status == value %}{{ label }}{% endif %}{% endfor %}{% endif %}
+      </td>
+      <td>
+        {% if can_edit %}
+        <select name="grade_{{ r.student.id }}">
+          <option value="">—</option>
+          {% for v in grade_values %}<option value="{{ v }}" {% if r.grade|stringformat:"s" == v %}selected{% endif %}>{{ v }}</option>{% endfor %}
+        </select>
+        {% elif r.grade %}<span class="g g{{ r.grade }}">{{ r.grade }}</span>{% else %}—{% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4" class="muted">В группе нет студентов.</td></tr>
+    {% endfor %}
+  </table>
+  <p class="muted">Оценка автоматически ставит отметку «Присутствовал». Отсутствующему («н») оценку поставить нельзя.</p>
+  {% if can_edit %}<button class="btn" type="submit">Сохранить ведомость</button>{% endif %}
+  <a class="btn light" href="{% url 'cabinet' %}">← К занятиям</a>
+  </form>
+</div>
+{% endblock %}

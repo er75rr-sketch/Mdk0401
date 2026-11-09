@@ -1,0 +1,16 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Вход — Электронный журнал{% endblock %}
+{% block content %}
+<div class="card login">
+  <h2>Вход в личный кабинет</h2>
+  {% if form.errors %}<div class="error">Неверный логин или пароль.</div>{% endif %}
+  <form method="post">{% csrf_token %}
+    <label for="id_username">Логин</label>
+    <input type="text" name="username" id="id_username" autofocus required>
+    <label for="id_password">Пароль</label>
+    <input type="password" name="password" id="id_password" required>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit">Войти</button>
+  </form>
+</div>
+{% endblock %}

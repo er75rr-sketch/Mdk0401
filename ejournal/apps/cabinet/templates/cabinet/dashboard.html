@@ -1,0 +1,48 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Мой дневник — {{ student.full_name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin:0">{{ student.full_name }}</h2>
+  <div class="muted">Группа {{ student.group.name }}, {{ student.group.course }} курс · зачётная книжка № {{ student.record_book }}</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num">{{ average|default:"—" }}</div><div class="lbl">Средний балл</div></div>
+  <div class="stat"><div class="num">{{ attendance.absent }}</div><div class="lbl">Пропусков («н»)</div></div>
+  <div class="stat"><div class="num">{% if attendance.attendance_percent is not None %}{{ attendance.attendance_percent }}%{% else %}—{% endif %}</div><div class="lbl">Посещаемость</div></div>
+</div>
+
+<div class="card">
+  <h2>Успеваемость по дисциплинам</h2>
+  <table>
+    <tr><th>Дисциплина</th><th>Оценки</th><th>Средний</th></tr>
+    {% for s in subjects %}
+    <tr>
+      <td><b>{{ s.name }}</b><br><span class="muted">{{ s.teacher }}</span></td>
+      <td>{% for g in s.grades %}<span class="g g{{ g.value }}" title="{{ g.lesson.date|date:'d.m.Y' }}: {{ g.lesson.topic }}">{{ g.value }}</span>{% empty %}<span class="muted">оценок пока нет</span>{% endfor %}</td>
+      <td><b>{{ s.avg|default:"—" }}</b></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3" class="muted">Дисциплины ещё не назначены.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <h2>Последние занятия</h2>
+  <table>
+    <tr><th>Дата</th><th>Дисциплина</th><th>Тема</th><th>Посещение</th><th>Оценка</th></tr>
+    {% for r in recent %}
+    <tr>
+      <td>{{ r.lesson.date|date:"d.m.Y" }}</td>
+      <td>{{ r.lesson.assignment.subject.name }}</td>
+      <td>{{ r.lesson.topic }} <span class="muted">· {{ r.lesson.get_lesson_type_display }}</span></td>
+      <td class="{% if r.status == 'absent' %}absent{% endif %}">{{ r.status_display }}</td>
+      <td>{% if r.grade %}<span class="g g{{ r.grade }}">{{ r.grade }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="muted">Занятий пока не было.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

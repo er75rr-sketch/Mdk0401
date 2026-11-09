@@ -1,0 +1,27 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Отчёт — группа {{ group.name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin:0">Успеваемость группы {{ report.group }}</h2>
+  <div class="muted">{{ report.course }} курс · куратор: {{ group.curator.full_name|default:"не назначен" }}</div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="num">{{ report.average_grade|default:"—" }}</div><div class="lbl">Средний балл группы</div></div>
+  <div class="stat"><div class="num">{{ report.attendance.absent }}</div><div class="lbl">Пропусков всего</div></div>
+  <div class="stat"><div class="num">{% if report.attendance.attendance_percent is not None %}{{ report.attendance.attendance_percent }}%{% else %}—{% endif %}</div><div class="lbl">Посещаемость</div></div>
+</div>
+<div class="card">
+  <table>
+    <tr><th>№</th><th>Студент</th><th>Средний балл</th><th>Оценок</th><th>Пропусков</th></tr>
+    {% for s in report.students %}
+    <tr>
+      <td>{{ forloop.counter }}</td><td>{{ s.student }}</td>
+      <td><b {% if s.average_grade and s.average_grade < 3 %}class="absent"{% endif %}>{{ s.average_grade|default:"—" }}</b></td>
+      <td>{{ s.grades_count }}</td>
+      <td {% if s.absences > 2 %}class="absent"{% endif %}>{{ s.absences }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p><a class="btn light" href="{% url 'cabinet' %}">← Назад</a></p>
+</div>
+{% endblock %}

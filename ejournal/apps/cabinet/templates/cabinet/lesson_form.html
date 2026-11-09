@@ -1,0 +1,16 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Новое занятие{% endblock %}
+{% block content %}
+<div class="card" style="max-width:560px">
+  <h2>Новое занятие</h2>
+  <form method="post">{% csrf_token %}
+    {% for field in form %}
+      <p><label for="{{ field.id_for_label }}"><b>{{ field.label }}</b></label><br>{{ field }}
+      {% for e in field.errors %}<br><span class="error">{{ e }}</span>{% endfor %}</p>
+    {% endfor %}
+    {% for e in form.non_field_errors %}<div class="error">{{ e }}</div>{% endfor %}
+    <button class="btn" type="submit">Создать и открыть ведомость</button>
+    <a class="btn light" href="{% url 'cabinet' %}">Отмена</a>
+  </form>
+</div>
+{% endblock %}
